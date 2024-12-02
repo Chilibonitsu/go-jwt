@@ -1,0 +1,26 @@
+login
+{
+    "guid": "6ggag10b-58cc-4372-a567-0e02b2c3d479",
+    "username": "aboba",
+    "email": "aboba@example.com",
+    "password": "123123",
+    "ip": "192.168.0.1"
+}
+give tokens
+{
+    "guid": "6ggag10b-58cc-4372-a567-0e02b2c3d479",
+    "username": "aboba",
+    "email": "aboba@example.com",
+    "password": "123123",
+    "ip" : "192.168.0.1"
+
+}
+refresh tokens
+{
+    "guid": "6ggag10b-58cc-4372-a567-0e02b2c3d479",
+    "username": "aboba",
+    "email": "aboba@example.com",
+    "password": "123123",
+    "ip" : "192.168.0.1"
+
+}
