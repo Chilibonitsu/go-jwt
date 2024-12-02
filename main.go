@@ -19,6 +19,6 @@ func main() {
 	r.POST("/signup", controllers.SignUp)
 	r.POST("/tokenize", controllers.Tokenize)
 
-	r.POST("/refreshTokens", middleware.RequireAuth, controllers.RefreshTokens)
+	r.POST("/refreshTokens", middleware.RequireAuth, controllers.RefreshTokens, controllers.Validate)
 	r.Run()
 }

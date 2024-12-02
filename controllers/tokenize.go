@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"go-jwt/initializers"
 	"go-jwt/models"
 	"net/http"
@@ -15,7 +14,7 @@ import (
 )
 
 func Tokenize(c *gin.Context) {
-	fmt.Println("asd")
+
 	var body struct {
 		Guid     string
 		Username string
@@ -27,6 +26,7 @@ func Tokenize(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to read body",
 		})
+
 		return
 	}
 	var user models.User
@@ -46,10 +46,10 @@ func Tokenize(c *gin.Context) {
 
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
 		"sub": user.Guid,
-		"exp": time.Now().Add(time.Second * 5).Unix(),
+		"exp": time.Now().Add(time.Second * 60).Unix(),
 		"ip":  c.ClientIP(),
 	})
-	fmt.Println("asd")
+
 	accessTokenString, err := accessToken.SignedString([]byte(os.Getenv("SECRET")))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -58,7 +58,7 @@ func Tokenize(c *gin.Context) {
 	}
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
 		"sub": user.Guid,
-		"exp": time.Now().Add(time.Second * 40).Unix(),
+		"exp": time.Now().Add(time.Second * 60).Unix(),
 		"ip":  c.ClientIP(),
 	})
 	refreshTokenString, err := refreshToken.SignedString([]byte(os.Getenv("SECRETREF")))
@@ -80,24 +80,14 @@ func Tokenize(c *gin.Context) {
 }
 
 func RefreshTokens(c *gin.Context) {
-	var body struct {
-		Guid     string
-		Username string
-		Email    string
-		Password string
-	}
 
-	if c.Bind(&body) != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to read body",
-		})
-		return
-	}
+	body := c.MustGet("body").(models.Body)
+
 	var user models.User
 
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
 		"sub": body.Guid,
-		"exp": time.Now().Add(time.Second * 5).Unix(),
+		"exp": time.Now().Add(time.Second * 60).Unix(),
 		"ip":  c.ClientIP(),
 	})
 
@@ -110,7 +100,7 @@ func RefreshTokens(c *gin.Context) {
 
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
 		"sub": body.Guid,
-		"exp": time.Now().Add(time.Second * 40).Unix(),
+		"exp": time.Now().Add(time.Second * 60).Unix(),
 		"ip":  c.ClientIP(),
 	})
 
@@ -125,12 +115,13 @@ func RefreshTokens(c *gin.Context) {
 		Where("guid = ?", body.Guid).
 		Update("refresh_token", refreshTokenString)
 
-	c.SetCookie("Authorization", accessTokenString, 15, "/", "", true, true)
+	c.SetCookie("Authorization", accessTokenString, 120, "/", "", true, true)
 	c.SetCookie("RefreshToken", refreshTokenString, 3600*24*30, "/", "", true, true)
 
 	c.JSON(http.StatusOK, gin.H{})
 
 }
+
 func SignUp(c *gin.Context) {
 
 	var body struct {
@@ -165,4 +156,11 @@ func SignUp(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{})
+}
+func Validate(c *gin.Context) {
+	user, _ := c.Get("user")
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": user,
+	})
 }
