@@ -1,0 +1,10 @@
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+	GUID TEXT,
+    username VARCHAR(15) UNIQUE NOT NULL,
+    email VARCHAR(20) UNIQUE NOT NULL,  
+    password_hash TEXT NOT NULL,
+	refresh_token TEXT,
+    created_at TIMESTAMP DEFAULT NOW(),  
+    role VARCHAR(10) DEFAULT 'user'      
+);
